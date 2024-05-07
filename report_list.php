@@ -3,6 +3,7 @@
   session_start();
   $_SESSION["Current_Page"] = "report";
 
+
   require_once("config.php");
   $db_handle = new DBController();
   // Check if the user is already logged in, if yes then redirect him to welcome page
@@ -14,11 +15,28 @@
   $page  = $records_per_page = $num_contacts = 0;
   $date_from = date('Y-m-d', strtotime(date("Y-m-d H:i:s"). ' - 365 days')) ;
   $date_to = date('Y-m-d', strtotime(date("Y-m-d H:i:s"). ' + 2 days'))  ;
+  $msg = "";
 
-
+  $total_price = 0;
   $page = isset($_GET["page"]) && is_numeric($_GET["page"]) ? (int)$_GET["page"] : 1;
   // Number of records to show on each page
   $records_per_page = 10;
+
+
+
+  if (!empty($_POST)) {
+
+      $total_price = 0;
+      // Post data not empty insert a new record
+      $date_from = isset($_POST['date_from']) ? $_POST['date_from'] : '';
+      $date_to = isset($_POST['date_to']) ? $_POST['date_to'] : '';
+
+      if($date_to < $date_from){
+        $msg .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspInvalid Date Interval. <br>";
+      }
+  }	else {
+
+}
 
   if($is_admin=== 1){
       $sql = "SELECT * FROM tbl_order WHERE is_completed = 1 and booking_date ='".$date_to."' ";
@@ -56,8 +74,24 @@
 </div>
 
 <div id="topmargin"></div><div style="height:10px"></div>
+
+<form method="post" action="">
+    <small>    <a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date Interval : <input type="date" name="date_from" value="<?php echo $date_from; ?>" required>
+          -  <input type="date" name="date_to" value= "<?php echo $date_to; ?>" required>
+        <input type="submit" value="Retrieve Records" class="btnsubmit" />
+        <?php if ($msg): ?>
+        <p style="color:red;"><strong><?=$msg?></strong></p>
+        <?php endif; ?>
+    </a></small>
+</form>
+
+
+
+
+
+<div id="topmargin"></div>
 <div class="content read">
-  <h4>Reservation List</h4>
+  <h4>Reservation Report</h4>
   <table>
         <thead>
             <tr>
@@ -108,9 +142,18 @@
                               <td><?=$order_item["is_completed"] ==0? "No":"Yes";?></td>
                           </tr>
                           <?php
+
+      										$total_price += $order_item["total"];
                         }
                     }
                 ?>
+                <tr>
+    							<td colspan="4" align="right"><strong>Total Revenue:</strong></td>
+    								<td align="right" colspan="1"><strong><?php echo "Php ".number_format($total_price, 2); ?></strong></td>
+    							<td></td>
+                  <td></td>
+              </tr>
+
         </tbody>
     </table>
     <div class="pagination">

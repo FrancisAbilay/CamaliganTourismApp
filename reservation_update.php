@@ -7,7 +7,7 @@ $_SESSION["Current_Page"] = "order";
   $db_handle = new DBController();
   $image = $msg = $id ="";
   $userid =$name = $booking_date = $address = $city = "";
-  $province =$order_item_no = $zipcode = $total = $is_paid= $is_completed ="";
+  $province =$contact_no = $zipcode = $total = $is_paid= $is_completed ="";
   $is_admin = isset($_SESSION["is_admin"])? $_SESSION["is_admin"]:0;
 
 
@@ -25,7 +25,7 @@ $_SESSION["Current_Page"] = "order";
          // Check if username exists, if yes then verify password
         if(mysqli_stmt_num_rows($stmt) == 1){
             // Bind result variables
-            mysqli_stmt_bind_result($stmt, $userid, $name, $booking_date, $address, $city, $province, $order_item_no, $zipcode, $total, $is_paid, $is_completed);
+            mysqli_stmt_bind_result($stmt, $userid, $name, $booking_date, $address, $city, $province, $contact_no, $zipcode, $total, $is_paid, $is_completed);
             if(mysqli_stmt_fetch($stmt)){
                mysqli_stmt_close($stmt);
 
@@ -47,6 +47,11 @@ $_SESSION["Current_Page"] = "order";
   if (!empty($_POST)) {
       // Post data not empty insert a new record
     // Check if POST variable "name" exists, if not default the value to blank, basically the same for all variables
+      $name = isset($_POST['name']) ? $_POST['name'] : '';
+      $address = isset($_POST['address']) ? $_POST['address'] : '';
+      $city = isset($_POST['city']) ? $_POST['city'] : '';
+      $province = isset($_POST['province']) ? $_POST['province'] : '';
+      $contact_no = isset($_POST['contact_no']) ? $_POST['contact_no'] : '';
       $is_paid = isset($_POST['is_paid']) ? $_POST['is_paid'] : '0';
       $is_completed = isset($_POST['is_completed']) ? $_POST['is_completed'] : '0';
       $zipcode= isset($_POST['zipcode']) ? $_POST['zipcode'] : '';
@@ -54,7 +59,7 @@ $_SESSION["Current_Page"] = "order";
       {
         // Insert new record into the contacts table
         // Prepare an insert statement
-        $sql = "UPDATE tbl_order set is_paid  = " .strval($is_paid) .",  is_completed = " .strval($is_completed) .", zipcode ='" .$zipcode ."'";
+        $sql = "UPDATE tbl_order set is_paid  = " .strval($is_paid) .",  is_completed = " .strval($is_completed) .", zipcode ='" .$zipcode ."', name ='" .$name ."', address ='" .$address ."', city ='" .$city ."', province ='" .$province ."', contact_no ='" .$contact_no ."'";
         $sql.=" WHERE ID = '" .strval($id) ."'";
 
         $msg = $sql;
@@ -104,9 +109,9 @@ $_SESSION["Current_Page"] = "order";
         </select>
         <label for="image"></label>
 
-        <label for="name">Name</label>
+        <label for="booking_date">Booking Date</label>
         <label for="is_completed">Completed?</label>
-        <input type="text" name="name" id="name" value="<?php echo $name; ?>" disabled="disabled">
+        <input type="text" name="booking_date" id="booking_date" value="<?php echo strval(date("Y-m-d",strtotime($booking_date))); ?>"  <?php echo $is_admin==1?'':'disabled="disabled"';?>>
         <select id="is_completed" name="is_completed" style="width:100px; height: 40px" <?php echo $is_admin==1?'':'disabled="disabled"';?>>
           <option value="1" <?php echo $is_completed==1?'Selected = "selected"':''; ?>>Yes</option>
           <option value="0" <?php echo $is_completed==0?'Selected = "selected"':'';  ?>>No</option>
@@ -114,27 +119,28 @@ $_SESSION["Current_Page"] = "order";
         </select>   <label for="image"></label>
 
 
-        <label for="booking_date">Booking Date</label>
-        <label for="zipcode">Booking Status</label>
-      <input type="text" name="booking_date" id="booking_date" value="<?php echo strval(date("Y-m-d",strtotime($booking_date))); ?>"  <?php echo $is_admin==1?'':'disabled="disabled"';?>>
-        <input type="text" name="zipcode" id="zipcode" value="<?php echo $zipcode; ?>" <?php echo $is_admin==1?'':'disabled="disabled"';?>>
+      <label for="name">Name</label>
+      <label for="zipcode">Booking Status</label>
+      <input type="text" name="name" id="name" value="<?php echo $name; ?>"  <?php echo $is_admin==1? 'disabled="disabled"' : '';?> >
+      <input type="text" name="zipcode" id="zipcode" value="<?php echo $zipcode; ?>" <?php echo $is_admin==1?'':'disabled="disabled"';?>>
 
         <label for="address">Address</label>
         <label for="city">City</label>
-        <input type="text" name="address" id="address" value="<?php echo $address; ?>" disabled="disabled">
-        <input type="text" name="city" id="city" value="<?php echo $city; ?>" disabled="disabled">
+        <input type="text" name="address" id="address" value="<?php echo $address; ?>" <?php echo $is_admin==1? 'disabled="disabled"' : '';?> >
+        <input type="text" name="city" id="city" value="<?php echo $city; ?>" <?php echo $is_admin==1? 'disabled="disabled"' : '';?> >
 
         <label for="province">Province</label>
         <label for="contact_no">Contact No.</label>
-        <input type="text" name="province" id="province" value="<?php echo $province; ?>" disabled="disabled">
-        <input type="text" name="contact_no" id="contact_no" value="<?php echo $order_item_no; ?>" disabled="disabled">
+        <input type="text" name="province" id="province" value="<?php echo $province; ?>" <?php echo $is_admin==1? 'disabled="disabled"' : '';?> >
+        <input type="text" name="contact_no" id="contact_no" value="<?php echo $contact_no; ?>" <?php echo $is_admin==1? 'disabled="disabled"' : '';?> >
 
 
         <?php if ($is_admin ==1){?>
             <input  style="width:180px; text-align:center;" type="submit" value="Submit">
             <a style="width:180px; text-align:center;"  href="reservation_list.php" class="create-record">Reservation List</a>
         <?php }else{?>
-          <a style="width:180px; text-align:center;" href="reservation_list.php" class="create-record">Reservation List</a>
+            <input  style="width:180px; text-align:center;" type="submit" value="Submit">
+            <a style="width:180px; text-align:center;" href="reservation_list.php" class="create-record">Reservation List</a>
         <?php }?>
       </form>
     <?php if ($msg): ?>

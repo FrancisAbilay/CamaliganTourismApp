@@ -241,7 +241,7 @@ $db_handle = new DBController();
              else {
              ?>
              <tr>
-               <td colspan = "5" style="text-align:center;" > Shopping Cart is Empty </td>
+               <td colspan = "5" style="text-align:center;" > Package Cart is Empty </td>
             </tr>
              <?php
              }

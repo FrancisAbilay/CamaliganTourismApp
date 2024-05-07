@@ -62,7 +62,7 @@
                 <td>#</td>
                 <td>Order Number</td>
                 <td>Booking Date</td>
-                <td>Address</td>
+                <td>Name</td>
                 <td>Total (Php)</td>
                 <td>Paid?</td>
                 <td>Completed?</td>
@@ -101,7 +101,7 @@
                               <td><?=$order_item["id"]?></td>
                               <td><?=$ordernum?></td>
                               <td><?=strval(date("Y-m-d",strtotime($order_item["booking_date"])))?></td>
-                              <td><?=$order_item["address"]?></td>
+                              <td><?=$order_item["name"]?></td>
                               <td><?=number_format($order_item["total"],2)?></td>
                               <td><?=$order_item["is_paid"] ==0? "No":"Yes";?></td>
                               <td><?=$order_item["is_completed"] ==0? "No":"Yes";?></td>
